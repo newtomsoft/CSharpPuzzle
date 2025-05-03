@@ -2,6 +2,8 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Puzzle", "Puzzle\Puzzle.csproj", "{D80FB6D9-13DD-4295-B63A-DA13EA0B1EBF}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PuzzleTest", "PuzzleTest\PuzzleTest.csproj", "{7C78D52E-E8B0-4BBE-B085-F9E52568B566}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -12,5 +14,9 @@ Global
 		{D80FB6D9-13DD-4295-B63A-DA13EA0B1EBF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D80FB6D9-13DD-4295-B63A-DA13EA0B1EBF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D80FB6D9-13DD-4295-B63A-DA13EA0B1EBF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7C78D52E-E8B0-4BBE-B085-F9E52568B566}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7C78D52E-E8B0-4BBE-B085-F9E52568B566}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7C78D52E-E8B0-4BBE-B085-F9E52568B566}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7C78D52E-E8B0-4BBE-B085-F9E52568B566}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
