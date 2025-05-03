@@ -17,9 +17,11 @@ int[,] puzzle =
 };
 
 Console.WriteLine("Grille initiale :");
-Sudoku.PrintSudoku(puzzle);
 
-var solution = Sudoku.SolveSudoku(puzzle);
+SudokuSolver solver = new(puzzle);
+solver.PrintPuzzle();
+
+var solution = solver.SolveSudoku();
 var isEmpty = solution.Cast<int>().SequenceEqual(new int[9, 9].Cast<int>());
 if (isEmpty)
 {
@@ -28,4 +30,4 @@ if (isEmpty)
 }
 
 Console.WriteLine("\nSolution :");
-Sudoku.PrintSudoku(solution);
+solver.PrintSolution();
