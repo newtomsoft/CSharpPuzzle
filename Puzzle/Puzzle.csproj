@@ -8,7 +8,12 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <PackageReference Include="Google.OrTools" Version="9.12.4544" />
       <PackageReference Include="Microsoft.Z3" Version="4.12.2" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ClCompile Include="SudokuSolver.cpp" />
     </ItemGroup>
 
 </Project>

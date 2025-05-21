@@ -2,12 +2,12 @@
 
 namespace Puzzle;
 
-public class SudokuSolver
+public class SudokuSolverZ3
 {
-    private const int GridSize = 9;
-    private const int BlockSize = 3;
+    private static int _gridSize;
+    private static int _blockSize;
     private const int MinValue = 1;
-    private const int MaxValue = GridSize;
+    private static int _maxValue = _gridSize;
 
     private readonly Context _ctx;
     private readonly int[,] _puzzle;
@@ -15,13 +15,16 @@ public class SudokuSolver
     private readonly int[,] _solution;
     private readonly IntExpr[,] _matrixExpr;
 
-    public SudokuSolver(int[,] puzzle)
+    public SudokuSolverZ3(int[,] puzzle)
     {
         _ctx = new Context();
         _puzzle = puzzle;
         _solver = _ctx.MkSolver();
-        _matrixExpr = new IntExpr[GridSize, GridSize];
-        _solution = new int[GridSize, GridSize];
+        _gridSize = puzzle.GetLength(0);
+        _blockSize = Convert.ToInt32(Math.Sqrt(_gridSize));
+        _maxValue = _gridSize;
+        _matrixExpr = new IntExpr[_gridSize, _gridSize];
+        _solution = new int[_gridSize, _gridSize];
     }
 
     public int[,] SolveSudoku()
@@ -41,19 +44,19 @@ public class SudokuSolver
         if (status != Status.SATISFIABLE) return;
         var model = _solver.Model;
 
-        for (var i = 0; i < GridSize; i++)
-        for (var j = 0; j < GridSize; j++)
+        for (var i = 0; i < _gridSize; i++)
+        for (var j = 0; j < _gridSize; j++)
             _solution[i, j] = ((IntNum)model.Evaluate(_matrixExpr[i, j])).Int;
     }
 
     private void SetInitialPuzzleValues()
     {
-        for (var i = 0; i < GridSize; i++)
-        for (var j = 0; j < GridSize; j++)
+        for (var i = 0; i < _gridSize; i++)
+        for (var j = 0; j < _gridSize; j++)
             _matrixExpr[i, j] = _ctx.MkIntConst($"cell_{i}_{j}");
 
-        for (var i = 0; i < GridSize; i++)
-        for (var j = 0; j < GridSize; j++)
+        for (var i = 0; i < _gridSize; i++)
+        for (var j = 0; j < _gridSize; j++)
             if (_puzzle[i, j] != 0)
                 _solver.Add(_ctx.MkEq(_matrixExpr[i, j], _ctx.MkInt(_puzzle[i, j])));
     }
@@ -63,41 +66,41 @@ public class SudokuSolver
         foreach (var cellExpr in _matrixExpr)
         {
             var minConstraint = _ctx.MkGe(cellExpr, _ctx.MkInt(MinValue));
-            var maxConstraint = _ctx.MkLe(cellExpr, _ctx.MkInt(MaxValue));
+            var maxConstraint = _ctx.MkLe(cellExpr, _ctx.MkInt(_maxValue));
             _solver.Add(minConstraint, maxConstraint);
         }
     }
 
     private void AddDistinctRowConstraint()
     {
-        for (var rowIndex = 0; rowIndex < GridSize; rowIndex++)
+        for (var rowIndex = 0; rowIndex < _gridSize; rowIndex++)
         {
-            var rowValues = Enumerable.Range(0, GridSize).Select(columnIndex => _matrixExpr[rowIndex, columnIndex]).ToArray<Expr>();
+            var rowValues = Enumerable.Range(0, _gridSize).Select(columnIndex => _matrixExpr[rowIndex, columnIndex]).ToArray<Expr>();
             _solver.Add(_ctx.MkDistinct(rowValues));
         }
     }
 
     private void AddDistinctColumnConstraint()
     {
-        for (var columnIndex = 0; columnIndex < GridSize; columnIndex++)
+        for (var columnIndex = 0; columnIndex < _gridSize; columnIndex++)
         {
-            var columnValues = Enumerable.Range(0, GridSize).Select(rowIndex => _matrixExpr[rowIndex, columnIndex]).ToArray<Expr>();
+            var columnValues = Enumerable.Range(0, _gridSize).Select(rowIndex => _matrixExpr[rowIndex, columnIndex]).ToArray<Expr>();
             _solver.Add(_ctx.MkDistinct(columnValues));
         }
     }
 
     private void AddDistinctBlockConstraints()
     {
-        for (var blockRow = 0; blockRow < BlockSize; blockRow++)
+        for (var blockRow = 0; blockRow < _blockSize; blockRow++)
         {
-            for (var blockCol = 0; blockCol < BlockSize; blockCol++)
+            for (var blockCol = 0; blockCol < _blockSize; blockCol++)
             {
-                var blockValues = new Expr[GridSize];
+                var blockValues = new Expr[_gridSize];
                 var index = 0;
 
-                for (var i = 0; i < BlockSize; i++)
-                for (var j = 0; j < BlockSize; j++)
-                    blockValues[index++] = _matrixExpr[blockRow * 3 + i, blockCol * 3 + j];
+                for (var i = 0; i < _blockSize; i++)
+                for (var j = 0; j < _blockSize; j++)
+                    blockValues[index++] = _matrixExpr[blockRow * _blockSize + i, blockCol * _blockSize + j];
 
                 _solver.Add(_ctx.MkDistinct(blockValues));
             }
@@ -109,12 +112,12 @@ public class SudokuSolver
 
     private static void PrintMatrix(int[,] matrix)
     {
-        for (var i = 0; i < GridSize; i++)
+        for (var i = 0; i < _gridSize; i++)
         {
-            if (i % BlockSize == 0 && i != 0) Console.WriteLine("------+-------+------");
-            for (var j = 0; j < GridSize; j++)
+            if (i % _blockSize == 0 && i != 0) Console.WriteLine("------+-------+------");
+            for (var j = 0; j < _gridSize; j++)
             {
-                if (j % BlockSize == 0 && j != 0) Console.Write("| ");
+                if (j % _blockSize == 0 && j != 0) Console.Write("| ");
                 var value = matrix[i, j];
                 if (value == 0) Console.Write(". ");
                 else Console.Write(value + " ");
